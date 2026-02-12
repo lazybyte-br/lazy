@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Front Flask API</title>
+</head>
+<body>
+  <h1>Login</h1>
+  <input id="user" placeholder="Usuário" />
+  <input id="pass" placeholder="Senha" type="password" />
+  <button onclick="login()">Entrar</button>
+
+  <h2>Dados</h2>
+  <button onclick="getData()">Carregar dados</button>
+  <pre id="output"></pre>
+
+  <script type="module">
+    
+    import { enviar } from "./js/enviar.js";
+    
+    window.login = login;
+
+    async function login() 
+    {
+      const configs = await fetch("/frontend/js/_config.json").then( r => r.json() );
+
+      const isLocalhost = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+
+      const API_URL = isLocalhost ? configs.DEV_API_URL : configs.PROD_API_URL;
+
+      const usuario = document.getElementById("user").value;
+      const senha = document.getElementById("pass").value;
+
+      const dados = { username: usuario, password: senha };
+
+
+      enviar(`${API_URL}/auth/login` , dados )
+      .then( resposta => {
+        alert( JSON.stringify(resposta) ) ;
+      })
+      .catch( erro => {
+        console.error( 'Erro ao enviar: ' + erro );
+      });
+    }
+
+  </script>
+</body>
+</html>

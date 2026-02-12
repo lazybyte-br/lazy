@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+  --fontPri: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Oxygen, Ubuntu, Cantarell, "Open Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --fontTit: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Oxygen, Ubuntu, Cantarell, "Open Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --spacer: 1.6rem;
+  --cor-fundo: #f7f7f7;
+  --cor-principal: #333;
+  --cor-destaque: #f05423;
+  /* Laranja Blender */
+  --cor-rodape: #222;
+  --cor02: linear-gradient(#3d3d3d 1%, #191919 99%);
+  --cor03: #d0253f;
+  --bg: #0f0f10;
+  --line: #2a2a2a;
+  --text: #ededed;
+  --led-on: #49d24a;
+  /* verde do LED aceso */
+  --led-off: #d0253f;
+  /*#193119;       / * tom escuro quando apagado */
+  --glow: 0 0 12px rgba(73, 210, 74, 0.45);
+  --size: 0.75rem;
+  /* diâmetro do LED */
+  --line-height: 3px;
+  --card:#0b1220;
+  --accent:#06b6d4;
+  --margem: calc( var( --spacer ) *2 );
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: var(--fontPri);
+  line-height: calc( var( --spacer ) * 1.5 );
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden !important;
+  line-height: 1.6;
+  /* Essencial para legibilidade */
+  background: #f6f8fa;
+}
+
+img
+{
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  text-decoration: none;
+  color: #222;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+a:hover {
+  opacity: 0.6;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  border: solid 0.1rem #fff;
+  border-radius: 2.5rem;
+  font-size: 1rem;
+  margin-top: 1rem;
+  overflow: hidden;
+  position: relative;
+  color: #fff;
+  max-width: 75%;
+  transition: all 0.3s ease;
+  padding: .5rem 1.5rem;
+}
+
+button:hover {
+  color: #fe3d38;
+  transition: all 0.3s ease;
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -130%;
+  width: 120%;
+  height: 100%;
+  background: rgba(255, 255, 255, 1);
+  transform: skew(-30deg);
+  transition: left 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  z-index: -1;
+}
+
+button:hover::after {
+  left: -10%;
+  opacity: 1;
+}
+
+
+/* KEYFRAMES */
+@keyframes entrar {
+  from { left: -130%; }
+  to   { left: -10%; }
+}
+
+@keyframes sair {
+  from { left: -10%; opacity: 1; }
+  to   { left: 130%; opacity: 0; }
+}
+
+.flutuar {
+  animation: flutuar 4s ease-in-out infinite;
+}
+
+@keyframes flutuar {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(10px) rotate(1deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.hide
+{
+  display: none;
+}

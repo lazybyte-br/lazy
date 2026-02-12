@@ -1,0 +1,120 @@
+  .hero-slider {
+    position: relative;
+    width: 100%;
+    height: calc( 90vh - 2rem );
+    overflow: hidden;
+    margin-top: 2rem;
+    z-index: 1;
+    top: 5.6rem; 
+    left: 0;
+    scroll-margin-top: 6.5rem; 
+  }
+
+  .hero-slider::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: absolute;
+    top: 0; 
+    left: 0;
+    background-image: radial-gradient(circle at 2px 2px, #ec0f0f 2px, transparent 0);
+    background-size: 2px 2px; 
+    opacity: 0.08;
+    z-index: 2;
+  }
+
+  .slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    z-index: 1;
+  }
+
+  .slide.active {
+    opacity: 1;
+    z-index: 2;
+  }
+
+  .slide img, .slide video, .slide iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.3);
+  }
+
+  /* Navegação */
+  .nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    background: rgba(0,0,0,0);
+    border: none;
+    padding: 0.5rem 1.2rem;
+    cursor: pointer;
+    z-index: 3;
+    font-size: 1.5rem;
+    transition: background, opacity 0.3s;
+    border-radius: 50%;
+    aspect-ratio: 1;
+    opacity: 0.3;
+  }
+
+  .nav-btn:hover { background: rgba(255,255,255,0.2); opacity: 1;}
+  .prev { left: 10px; }
+  .next { right: 10px; }
+
+  /* Dots */
+  .dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 4;
+  }
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .dot.active {
+    background: #fff;
+  }
+
+  /* Progress Bar */
+  .progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 0%;
+    background: linear-gradient(90deg, #00ffcc, #00b8b8);
+    z-index: 5;
+    transition: width 0.2s linear;
+  }
+
+/* ====== LAYOUT PARA TELAS MÉDIAS - TABLET ====== */
+@media (min-width: 768px) 
+{
+  .hero-slider {
+    height: 75vh;
+    z-index: 1;
+    top: 5.1rem;
+  }
+}

@@ -1,0 +1,129 @@
+.status-card {
+  width: 100%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 998;
+}
+
+#statusText{
+  font-size: 0.9em;
+}
+
+.status-line {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 12px;
+  background: var(--bg);
+  padding-left: calc( var(--margem) * .7 );
+}
+
+.status-line::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  height: 0.01rem;
+  /* var(--line-height);*/
+  background: var(--line);
+  top: 51%;
+  /* centraliza verticalmente */
+  transform: translateY(-50%);
+  /* centraliza pixel-perfect */
+  border-radius: 4px;
+  z-index: 0;
+}
+
+.led {
+  --s: var(--size);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  /* acima da linha */
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.6) inset;
+  display: inline-block;
+  flex: 0 0 var(--s);
+  /* não cresce */
+  cursor: pointer;
+  transition: box-shadow 180ms linear, background-color 180ms linear, transform 120ms ease;
+  background: var(--led-on);
+  outline: none;
+}
+
+.led.off {
+  background: var(--led-off);
+  box-shadow: none;
+  transform: scale(.98);
+}
+
+.led.on {
+  background: radial-gradient(circle at 30% 30%, #a9ffd0 6%, var(--led-on) 40%);
+  box-shadow: var(--glow);
+  transform: scale(1.02);
+}
+
+@keyframes pulse-led {
+  0% {
+    box-shadow: 0 0 0px rgba(73, 210, 74, 0.0);
+    transform: scale(1.00);
+  }
+
+  50% {
+    box-shadow: 0 0 24px rgba(73, 210, 74, 1);
+    transform: scale(1.06);
+  }
+
+  100% {
+    box-shadow: 0 0 0px rgba(73, 210, 74, 0.0);
+    transform: scale(1.00);
+  }
+}
+
+.led.blink.on {
+  animation: pulse-led 900ms ease-in-out infinite;
+}
+
+.status-text {
+  position: relative;
+  z-index: 2;
+  font-size: 0.8rem;
+  font-weight: 300;
+  color: var(--text);
+  user-select: none;
+}
+
+.hint {
+  margin-top: 10px;
+  color: #a9a9a9;
+  font-size: 0.875rem;
+}
+
+/* acessibilidade: reduz movimento se usuário preferir */
+@media (prefers-reduced-motion: reduce) {
+  .led.blink.on {
+    animation: none;
+  }
+
+  .led {
+    transition: none;
+  }
+}
+
+/* ====== LAYOUT PARA TELAS MÉDIAS - TABLET ====== */
+@media (min-width: 768px) {
+  .status-line {
+    height: 2rem;
+    padding: 1.2rem calc( var(--margem) * 3 );
+  }
+
+  header
+  {
+    top: 1.95rem!important;
+  }
+}

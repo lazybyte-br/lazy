@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Controle Remoto</title>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<style>
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 20px; background: #111; color: white; }
+  button { font-size: 2em; padding: 20px 40px; border: none; border-radius: 10px; background: #444; color: white; cursor: pointer; transition: 0.2s; }
+  button:hover { background: #666; transform: scale(1.05); }
+  #status { font-size: 1.2em; color: #aaa; }
+</style>
+</head>
+<body>
+<h1>Controle da Apresentação</h1>
+<div id="status">Slide atual: —</div>
+<button id="prevBtn">⬅️ Anterior</button>
+<button id="nextBtn">➡️ Próximo</button>
+<button id="jumpBtn">🔢 Ir para slide</button>
+
+<script>
+  const SERVER_URL = 'http://127.0.0.1:5500/lazybyte/frontend/l.a.b/index.html';
+  const socket = io(SERVER_URL);
+  const statusEl = document.getElementById('status');
+  let currentSlide = 1;
+
+  socket.on('connect', () => {
+    socket.emit('request_state');
+  });
+
+  socket.on('state', (data) => {
+    if (data && typeof data.slide === 'number') {
+      currentSlide = data.slide;
+      statusEl.textContent = "Slide atual: " + currentSlide;
+    }
+  });
+
+  socket.on('update_slide', (data) => {
+    if (data && typeof data.slide === 'number') {
+      currentSlide = data.slide;
+      statusEl.textContent = "Slide atual: " + currentSlide;
+    }
+  });
+
+  function sendAction(action) {
+    socket.emit('change_slide', { action });
+  }
+
+  function sendGoTo(n) {
+    socket.emit('change_slide', { action: 'goto', slide: n });
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => sendAction('prev'));
+  document.getElementById('nextBtn').addEventListener('click', () => sendAction('next'));
+  document.getElementById('jumpBtn').addEventListener('click', () => {
+    const n = parseInt(prompt('Ir para o número do slide:'), 10);
+    if (!isNaN(n) && n >= 1) sendGoTo(n);
+  });
+</script>
+</body>
+</html>

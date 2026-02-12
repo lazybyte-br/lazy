@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <!-- Tema do highlight.js -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-dark.min.css">
+
+    <!-- highlight.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+
+    <!-- Plugin para números de linha -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
+
+    <!-- marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <link rel="stylesheet" href="../css/estilos_lazybyte.css">
+
+</head>
+
+<body>
+    <div class="status-card" role="region" aria-label="Status de disponibilidade">
+        <div class="status-line">
+            <!-- LED: role + aria-pressed toggles availability of blink; descriptive aria-live for screen readers -->
+            <div id="led" class="led on blink" role="button" tabindex="0" aria-pressed="true"
+                aria-label="Indicador de disponibilidade. Piscando quando disponível. Clique para alternar a piscação.">
+            </div>
+
+            <div class="status-text" id="statusText" aria-live="polite">Agenda aberta para projetos! </div>
+        </div>
+    </div>
+
+    <header id="logo-header" class="logo-header">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_TV_2015.png" alt="Logo">
+        <h1>Meu Site</h1>
+    </header>
+
+    <div class="menu-btn" id="menu-btn">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <nav id="menu">
+
+        <ul>
+            <li><a href="#">Início</a></li>
+            <li><a href="#">Serviços</a></li>
+            <li><a href="#">Portfólio</a></li>
+            <li><a href="../l.a.b/" title="Lazybyte Academy Blog">L.A.B</a></li>
+            <li><a href="#">Contato</a></li>
+            <li class="auth-only">
+                <a href="#" onclick="sair()">Sair</a>
+            </li>
+        </ul>
+
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Mude o <strong> Mundo </strong> </h1>
+            <p>Junte-se a uma equipe de desenvolvedores apaixonados redefinindo o futuro da criação 3D.</p>
+        </div>
+    </section>
+
+    <main>
+
+        <section>
+            <!-- BARRA DE EDIÇÃO -->
+            <div class="editor-toolbar auth-only ">
+                <button data-insert="## Texto ">Título</button>
+                <button data-insert=" **texto** "><b>B</b></button>
+                <button data-insert=" *texto* "><i>I</i></button>
+                <button data-insert="```codigo```">Code</button>
+                <button id="btn-tabs">Inserir Tabs</button>
+                <button id="btn-upload">Upload Img</button>
+                <input type="file" id="img-file" accept="image/*" style="display:none;">
+                <button id="btn-save">Salvar</button>
+                <button id="btn-publish">Publicar</button>
+            </div>
+            <textarea id="markdown-input" class=" auth-only ">
+## ORM - Object Relational Model
+
+### Etapas
+
+<div class="tabs-container">
+<div class="tab-buttons">
+    <button data-tab="tab1" class="active"> PHP - Laravel </button>
+    <button data-tab="tab2"> Python - SQL Alchemy </button>
+</div>
+<div class="tab-panels">
+<div id="tab1" class="tab-content">
+    <ol>
+        <li>cria os arquivos migrations em PHP (representam as mudanças no banco de dados)</li>
+        <li>roda o comando para aplicar as migrations no banco de dados (php artisan migrate)</li>
+        <li>cria os Models em PHP (representam as tabelas do banco de dados)</li>
+        <li>usa o Eloquent para mapear objetos ↔ banco de dados</li>
+    </ol>
+</div>
+<div id="tab2" class="tab-content hidden ">
+    <ol>
+        <li>SQLAlchemy ORM → faz o papel do Eloquent (Models)</li>
+        <li>Alembic → faz o papel do php artisan migrate</li>
+    </ol>
+</div>
+    
+</div>
+</div>
+
+<div class="image-gallery">
+    <img src="https://placehold.co/300x200/cccccc/333333?text=Foto+1" alt="Foto da equipe">
+    <img src="https://placehold.co/300x200/cccccc/333333?text=Foto+2" alt="Almoço no estúdio">
+    <img src="https://placehold.co/300x200/cccccc/333333?text=Foto+3" alt="Reunião da equipe">
+</div>
+
+</textarea>
+            <div class="preview" id="preview"></div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Blender Foundation</p>
+            <p>
+                <a href="#">Termos de Uso</a> |
+                <a href="#">Política de Privacidade</a> |
+                <a href="#">Doação</a>
+            </p>
+        </div>
+    </footer>
+
+    <script type="module" src="../js/_lazybyte.js"></script>
+
+    <script>
+
+        const textarea = document.getElementById('markdown-input');
+        const preview = document.getElementById('preview');
+
+        // Configurações opcionais do marked 
+        marked.setOptions({
+            gfm: true,
+            breaks: true,
+            langPrefix: 'language-',
+            mangle: false,
+            headerIds: false,
+            sanitize: false,
+        });
+
+        function decodeHTMLEntities(str) {
+            // decodifica &lt; &gt; &amp; etc.
+            const txt = document.createElement('textarea');
+            txt.innerHTML = str;
+            return txt.value;
+        }
+
+        function renderMarkdown() {
+            // Obtém o texto do textarea, mesmo com display:none
+            const content = textarea.value;
+
+            // Converte Markdown → HTML
+            let html = marked.parse(content);
+
+            // Substitui rvi://id por base64 real
+            html = resolveRVI(html);
+
+            // Insere o HTML no preview
+            preview.innerHTML = html;
+
+            // Highlight.js
+            const blocks = preview.querySelectorAll('pre code');
+            blocks.forEach(block => {
+                try { hljs.highlightElement(block); } catch { }
+                try { hljs.lineNumbersBlock(block); } catch { }
+            });
+
+            // Reativar tabs
+            initTabsIfAny();
+        }
+
+
+        // Exemplo simples de inicializador para as tabs (se estiver usando)
+        function initTabsIfAny() {
+            const containers = preview.querySelectorAll('.tabs-container');
+
+            containers.forEach(container => {
+                const buttons = container.querySelectorAll('.tab-buttons button');
+                const panels = container.querySelectorAll('.tab-content');
+                if (!buttons.length) return;
+
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const tabId = btn.dataset.tab;
+
+                        buttons.forEach(b => b.classList.toggle('active', b === btn));
+                        panels.forEach(p =>
+                            p.classList.toggle('hidden', p.id !== tabId)
+                        );
+                    });
+                });
+            });
+        }
+
+
+        // renderiza ao digitar 
+        textarea.addEventListener('input', renderMarkdown);
+        // renderiza ao carregar a página 
+        document.addEventListener('DOMContentLoaded', renderMarkdown);
+
+    </script>
+
+    <script>
+        // Inserir texto no cursor
+        function insertAtCursor(textarea, text) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+
+            textarea.setRangeText(text, start, end, "end");
+
+            textarea.dispatchEvent(new Event("input"));
+        }
+
+
+        // Botões simples (negrito, itálico, code)
+        document.querySelectorAll(".editor-toolbar button[data-insert]")
+            .forEach(btn => {
+                btn.addEventListener("click", () => {
+                    insertAtCursor(
+                        document.getElementById("markdown-input"),
+                        btn.dataset.insert
+                    );
+                });
+            });
+
+
+        // Botão especial para inserir as TABS HTML prontas
+        document.getElementById("btn-tabs")
+            .addEventListener("click", () => {
+                const bloco = `
+<div class="tabs-container">
+    <div class="tab-buttons">
+        <button data-tab="tab1" class="active">Aba 1</button>
+        <button data-tab="tab2">Aba 2</button>
+        <button data-tab="tab3">Aba 3</button>
+    </div> 
+    <div class="tab-panels">
+        <div id="tab1" class="tab-content">Conteúdo da Aba 1</div>
+        <div id="tab2" class="tab-content hidden">Conteúdo da Aba 2</div>
+        <div id="tab3" class="tab-content hidden">Conteúdo da Aba 3</div>
+    </div>
+</div>
+`;
+
+                insertAtCursor(
+                    document.getElementById("markdown-input"),
+                    bloco
+                );
+            });
+    </script>
+
+    <script>
+        // -----------------------------
+        // REPOSITÓRIO VIRTUAL DE IMAGENS
+        // -----------------------------
+
+        // Armazena imagens assim:
+        // repo[id] = { base64, urlOpcional }
+        const RVI = {};
+
+        function addToRepository(id, base64) {
+            RVI[id] = { base64 };
+
+            const grid = document.getElementById("repo-grid");
+
+            // container do item
+            const wrapper = document.createElement("div");
+            wrapper.className = "repo-item";
+            wrapper.dataset.id = id;
+
+            const thumb = document.createElement("img");
+            thumb.src = base64;
+            thumb.dataset.id = id;
+
+            // Inserir ao clicar na imagem
+            thumb.addEventListener("click", () => {
+                insertAtCursor(
+                    document.getElementById("markdown-input"),
+                    `![imagem](rvi://${id})`
+                );
+            });
+
+            // Botão excluir
+            const del = document.createElement("div");
+            del.className = "repo-delete";
+            del.textContent = "×";
+
+            del.addEventListener("click", (e) => {
+                e.stopPropagation();
+
+                if (!confirm("Excluir esta imagem do repositório?")) return;
+
+                delete RVI[id]; // Remove da memória
+                wrapper.remove(); // Remove da tela
+            });
+
+            wrapper.appendChild(thumb);
+            wrapper.appendChild(del);
+            grid.appendChild(wrapper);
+        }
+
+
+        // Substitui "rvi://xxxx" pelo Base64 real no preview
+        function resolveRVI(html) {
+            return html.replace(/rvi:\/\/([a-zA-Z0-9_-]+)/g, (match, id) => {
+                if (RVI[id]) return RVI[id].base64;
+                return match;
+            });
+        }
+    </script>
+
+    <script>
+        document.getElementById("btn-upload").addEventListener("click", () => {
+            document.getElementById("img-file").click();
+        });
+
+        document.getElementById("img-file").addEventListener("change", async () => {
+            const file = document.getElementById("img-file").files[0];
+            if (!file) return;
+
+            const compressedBase64 = await compressImage(file, 0.7);
+            // 0.7 = qualidade 70%
+
+
+            const id = "img_" + Date.now();
+            addToRepository(id, compressedBase64);
+
+            const md = `![imagem](rvi://${id})`;
+            insertAtCursor(document.getElementById("markdown-input"), md);
+
+        });
+
+        function compressImage(file, quality = 0.7, maxWidth = 1600) {
+            return new Promise(resolve => {
+                const img = new Image();
+                const reader = new FileReader();
+
+                reader.onload = e => {
+                    img.src = e.target.result;
+                };
+
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Redimensionamento automático para não explodir o tamanho
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // conversão final para JPG ou WebP
+                    const base64 = canvas.toDataURL("image/jpeg", quality);
+
+                    resolve(base64);
+                };
+
+                reader.readAsDataURL(file);
+            });
+        }
+
+    </script>
+
+    <script>
+        let btnSalva = document.querySelector('#btn-save');
+
+        btnSalva.addEventListener('click', salvaLab);
+
+        function salvaLab() {
+            let imagens = document.querySelectorAll('#repo-grid img');
+            let markdown = document.querySelector('#markdown-input');
+
+            let armazenaImagens = [];
+
+            imagens.forEach((img) => {
+                armazenaImagens.push(img);
+            });
+
+            console.log( armazenaImagens );
+            console.log( markdown.value );
+        }
+
+        //setInterval(pegaImagens, 5000);
+
+    </script>
+
+    <!-- REPOSITÓRIO VIRTUAL DE IMAGENS -->
+    <div id="image-repository" class="image-repo auth-only ">
+        <h3>Repositório de Imagens</h3>
+        <div id="repo-grid" class="repo-grid"></div>
+    </div>
+</body>
+
+</html>

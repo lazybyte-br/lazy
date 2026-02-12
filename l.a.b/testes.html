@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Apresentação (Modo Shower)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="{{ url_for('static', filename='slides.css') }}">
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+    :root
+    {
+        --bg:#0f1724;
+        --card:#0b1220;
+        --accent:#06b6d4;
+        --text:#e6eef6;
+        --spacer: 1.6rem;
+    }
+
+    *
+    {
+        box-sizing:border-box;
+        font-family: "Inter", sans-serif;
+        line-height: calc( var( --spacer ) * 1.5 );
+    }
+
+    img
+    {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+    }
+
+    html,body
+    {
+        height:100%;
+        margin:0;
+        font-family:Inter,ui-sans-serif,system-ui,Arial;
+        background:linear-gradient(180deg,#071026 0%, #081221 100%);
+        color:var(--text);
+    }
+        
+    header
+    {
+        padding:1rem 1.25rem;
+        border-bottom:1px solid rgba(255,255,255,0.03);
+        display:flex;
+        align-items:center;
+        gap:1rem;
+        margin-top: 3.5vw;
+    }
+
+    .hero-bg {
+      background: url(https://www.blender.org/wp-content/uploads/2024/01/blender_30_years_team.jpg);
+      width: 100vw;
+      height: 50vw;
+    }
+        
+    header h1
+    {
+        margin:0;
+        font-weight:600;
+        font-size: calc( var( --spacer ) * 1.2 );
+    }
+
+    header p
+    {
+        margin:0;
+        color:rgba(230,238,246,0.7);
+        font-size: var(--step-1);
+    }
+
+    /* GRID DE MINIATURAS */
+    .overview
+    {
+        padding:1rem;
+        display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+        gap:1rem;
+        align-items:start;
+        width: 100%;
+        aspect-ratio: 16/9;
+        overflow: hidden;
+        background: #081221;
+        transition: clip 0.3s ease-in-out;
+        position: absolute;
+        top: 0;
+        left: 0;
+        clip: rect(0,13vw,3.5vw,0);
+        border-radius: 5px;
+    }
+
+    .overview::before
+    {
+      content: "Slides";
+      border-radius: 1rem;
+      padding: 0.5rem 1rem;
+      display: block;
+      color: #333;
+      box-shadow: 0 0 10px rgba( 255, 255, 255, 1 );
+      background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+    }
+
+    .overview:hover
+    {
+      clip: rect(0,100vw,100vh,0);
+      box-shadow: inset 0 0 10px rgba( 255, 255, 255, 0.03 );
+    }
+
+    .thumb
+    {
+        background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        padding:.75rem;
+        border-radius:12px;
+        cursor:pointer;
+        transition:transform .18s ease, box-shadow .18s ease;
+        border:1px solid rgba(255,255,255,0.03);
+    }
+
+    .thumb:hover
+    {
+        transform:translateY(-6px);
+        box-shadow:0 6px 20px rgba(2,6,23,0.6);
+    }
+
+    .thumb .title
+    {
+        font-weight:600;
+        margin-bottom:.5rem;
+    }
+
+    .thumb .meta
+    {
+        font-size:.82rem;
+        color:rgba(230,238,246,0.68);
+    }
+
+    .thumb .preview
+    {
+        height:120px;
+        border-radius:8px;
+        overflow:hidden;
+        background:#011;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:rgba(255,255,255,0.25);
+        font-weight:700;
+    }
+
+    /* FULLSCREEN PRESENTATION */
+
+    .present
+    {
+        position:fixed;
+        inset:0;
+        display:none;
+        align-items:center;
+        justify-content:center;
+        background:linear-gradient(180deg, rgba(2,6,23,0.99), rgba(2,6,23,0.98));
+        z-index:50;
+        padding:2rem;
+    }
+
+    .present.active
+    {
+        display:flex;
+    }
+
+    .stage
+    {
+        width:min(1920px,95%);
+        aspect-ratio: 16/9;
+        background:var(--card);
+        border-radius:12px;
+        padding:2rem;
+        display:flex;
+        flex-direction:column;
+        gap:1rem;
+        box-shadow:0 30px 80px rgba(2,6,23,0.7);
+        position:relative;
+    }
+
+    .slide-content
+    {
+        flex:1;
+        background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        border-radius:8px;
+        padding:2rem;
+        overflow:auto;
+        display: grid;
+        grid-template-columns: repeat( 3, minmax(250px, 1fr));   
+        grid-template-rows: repeat( 2, 1fr );    
+    }
+
+    .slide-content h2
+    {
+      grid-row: 1 / span 1; /* Inicia na linha 1 e estende por 2 linhas */
+      grid-column: 1 / span 2; /* Inicia na coluna 1 e estende por 2 coluna */
+      align-self: flex-start;
+      font-size: var(--step-2);
+    }
+
+    .slide-content ul
+    {
+      grid-row: 2 / span 1; /* Inicia na linha 1 e estende por 2 linhas */
+      grid-column: 1 / span 1; /* Inicia na coluna 2 e estende por 1 coluna */
+      align-self: flex-start;
+      margin-top: -10rem;
+      font-size: 1.2rem;
+    }
+
+    .slide-content li
+    {
+      line-height: 200%;
+      margin-bottom: 2.3rem;
+    }
+
+    .slide-content figure
+    {
+      grid-row: 1 / span 2; /* Inicia na linha 1 e estende por 2 linhas */
+      grid-column: 2 / span 2; /* Inicia na coluna 2 e estende por 1 coluna */
+      align-self: center;
+    }
+
+    .controls
+    {
+        display:flex;
+        gap:.5rem;
+        align-items:center;
+    }
+
+    .btn
+    {
+        background:transparent;
+        border:1px solid rgba(255,255,255,0.06);
+        padding:.4rem .6rem;
+        border-radius:8px;
+        color:var(--text);
+        cursor:pointer;
+        display: none;
+    }
+
+    .footer
+    {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        font-size:.9rem;
+        color:rgba(230,238,246,0.8);
+    }
+
+    /* NAV OVERLAY ARROWS */
+    .nav-arrow
+    {
+        position:absolute;
+        top:50%;
+        transform:translateY(-50%);
+        font-size:2.25rem;
+        padding: 2rem;
+        cursor:pointer;
+        user-select:none;
+        height: 100%;
+    }
+
+    .nav-arrow.left
+    {
+        left:8px;
+    }
+
+    .nav-arrow.right
+    {
+        right:8px;
+    }
+
+    /* small screens */
+    @media (max-width:700px)
+    {
+        .overview
+        {
+            grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+        }
+
+        .stage
+        {
+            height:86%;
+            padding:1rem;
+        }
+        
+        .slide-content
+        {
+            padding:1rem;
+        }
+    }
+</style>
+
+</head>
+<body>
+  <header>
+    <h1>Ambientes de Desenvolvimento para Linguagens de Programação</h1>
+    <p>Instalação e Configuração.</p>
+  </header>
+
+  <section class="hero-bg" >
+
+  </section>
+
+  <main>
+    <section class="overview" id="overview"></section>
+
+    <h1>Entendendo Ambientes de Desenvolvimento.</h1>
+
+    <p>
+      Se você está começando a programar e já ouviu alguém falar sobre “instalar um ambiente de desenvolvimento” deve ter achado que era algo muito técnico, difícil, mas na verdade é mais simples (e mais importante!) do que aparenta ser!
+    </p>
+
+    <!-- slide -->
+    <h2> Ambientes de Desenvolvimento ou IDE </h2>
+
+    <ul>
+
+      <li>
+        Na área de desenvolvimento ouvimos bastante o termo IDE - Integrated Development Environment - ou Ambiente de Desenvolvimento Integrado.
+      </li>
+      
+      <li>
+        São as ferramentas essenciais para programadores escreverem, editarem, compilarem e depurarem código de forma eficiente. 
+      </li>
+
+    </ul>
+
+    <figure> 
+      <img src="{{ url_for('static', filename='images/IDE.jpg') }}">
+    </figure>
+
+    <!-- /slide -->
+
+    <h2>
+      Ambiente de Desenvolvimento
+    </h2>
+
+    <ul>
+
+      <li>
+        Podemos pensar no ambiente de desenvolvimento como uma cozinha. Antes de preparar um prato delicioso, você precisa de um fogão, panelas e ingredientes certos. Do mesmo jeito, antes de criar um site ou sistema em PHP, é preciso preparar o “lugar” onde o código vai funcionar.
+      </li>
+
+    </ul>
+
+  </main>
+
+  <!-- Camada de apresentação -->
+  <div class="present" id="present">
+    <div class="nav-arrow left" id="prev">&nbsp;</div>
+    <div class="stage" role="dialog" aria-modal="true">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="controls">
+          <button class="btn" id="prevBtn">Anterior</button>
+          <button class="btn" id="nextBtn">Próximo</button>
+        </div>
+        <div class="controls">
+          <button class="btn" id="overviewBtn">Voltar às miniaturas</button>
+        </div>
+      </div>
+
+      <div class="slide-content" id="slideContent"></div>
+
+      <div class="footer">
+        <div id="slideTitle">Slide</div>
+        <div id="slideCount">0 / 0</div>
+      </div>
+    </div>
+    <div class="nav-arrow right" id="next">&nbsp;</div>
+  </div>
+
+  <script>
+  const bodyHTML = document.body.innerHTML;
+  const slideRegex = /<!--\s*slide\s*-->([\s\S]*?)<!--\s*\/slide\s*-->/g;
+
+  const slides = [];
+  let match;
+
+  while ((match = slideRegex.exec(bodyHTML)) !== null) {
+    let slideHTML = match[1].trim();
+
+    // Ignora slides vazios ou apenas com espaços
+    if (!slideHTML) continue;
+
+    // Remove múltiplos espaços e quebras de linha
+    slideHTML = slideHTML.replace(/\s*\n\s*/g, ' ').trim();
+
+    if (!slideHTML) continue; // Protege contra slides que ficaram vazios após limpeza
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = slideHTML;
+
+    const h1 = tempDiv.querySelector('h1');
+    const h2 = tempDiv.querySelector('h2');
+    let title = h1 ? h1.textContent.trim() : h2 ? h2.textContent.trim() : 'Sem título';
+
+    slides.push({ title, html: slideHTML });
+  }
+
+  console.log(slides);
+</script>
+
+
+
+  <script>
+    // === Inicializa Socket.IO logo no início ===
+    const SERVER_URL = 'http://140.238.151.112:7443/';
+    const socket = io(SERVER_URL);
+
+    socket.on("connect", () => {
+      console.log("✅ Conectado ao servidor Socket.IO");
+      socket.emit("request_state");
+    });
+
+    // === Slides ===
+    /*const slides = [
+      {title:'Introdução', html:'<h2>Bem-vindo</h2><p>Apresentação estilo Shower.</p>'},
+      {title:'Tópicos', html:'<h2>O que veremos</h2><ul><li>Miniaturas</li><li>Apresentação</li><li>Controle remoto</li></ul>'},
+      {title:'Design', html:'<h2>Design simples</h2><p>CSS + JS puro.</p>'},
+      {title:'Código', html:'<h2>HTML + CSS + JS</h2><p>Com integração Socket.IO.</p>'},
+      {title:'Encerramento', html:'<h2>Obrigado!</h2><p>Use o controle remoto para navegar.</p>'}
+    ];*/
+
+    const overview = document.getElementById('overview');
+    const present = document.getElementById('present');
+    const slideContent = document.getElementById('slideContent');
+    const slideTitle = document.getElementById('slideTitle');
+    const slideCount = document.getElementById('slideCount');
+    const overviewBtn = document.getElementById('overviewBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevArrow = document.getElementById('prev');
+    const nextArrow = document.getElementById('next');
+
+    let current = 0;
+
+    // === Funções principais ===
+    function buildThumbnails() {
+      overview.innerHTML = '';
+      slides.forEach((s, i) => {
+        const t = document.createElement('article');
+        t.className = 'thumb';
+        t.tabIndex = 0;
+        t.innerHTML = `
+          <div class="title">${i + 1}. ${escapeHtml(s.title)}</div>
+          <div class="preview">${escapeHtml(s.title)}</div>
+          <div class="meta">Clique para abrir</div>`;
+        t.addEventListener('click', () => openPresentation(i));
+        overview.appendChild(t);
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>\"]/g, (m) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;"}[m]));
+    }
+
+    function openPresentation(index = 0) {
+      current = index;
+      renderSlide();
+      present.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      updateHash();
+    }
+
+    function closePresentation() {
+      present.classList.remove('active');
+      document.body.style.overflow = '';
+      history.pushState('', document.title, window.location.pathname + window.location.search);
+    }
+
+    function renderSlide(fromSocket = false) {
+      const s = slides[current];
+      slideTitle.innerHTML = `${current + 1}. ${s.title}`;
+      slideContent.innerHTML = s.html;
+      slideCount.textContent = `${current + 1} / ${slides.length}`;
+      updateHash();
+
+      // Só envia para o servidor se não veio de socket
+      if (!fromSocket) {
+        socket.emit("update_slide", { slide: current + 1 });
+      }
+    }
+
+    function updateHash() {
+      const newHash = `#slide-${current + 1}`;
+      if (location.hash !== newHash) history.replaceState(null, '', newHash);
+    }
+
+    function nextSlide() {
+      if (current < slides.length - 1) {
+        current++;
+        renderSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (current > 0) {
+        current--;
+        renderSlide();
+      }
+    }
+
+    // === Eventos locais ===
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+    prevArrow.addEventListener('click', prevSlide);
+    nextArrow.addEventListener('click', nextSlide);
+    overviewBtn.addEventListener('click', closePresentation);
+
+    window.addEventListener('keydown', (ev) => {
+      if (!present.classList.contains('active')) return;
+      const k = ev.key;
+      if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') nextSlide();
+      else if (k === 'ArrowLeft' || k === 'PageUp') prevSlide();
+      else if (k === 'Escape' || k === 'w' || k === 's' || k === 'c') closePresentation();
+    });
+
+    function handleHash() {
+      const h = location.hash.match(/slide-(\d+)/);
+      if (h) {
+        const n = Number(h[1]) - 1;
+        if (!isNaN(n) && n >= 0 && n < slides.length) openPresentation(n);
+      }
+    }
+
+    window.addEventListener('hashchange', handleHash);
+    buildThumbnails();
+    handleHash();
+
+    // === Comunicação recebida do controle remoto ===
+    // Inicializa socket
+    //const socket = io(SERVER_URL, { transports: ['websocket', 'polling'] });
+
+    // Quando o servidor envia update_slide -> atualiza slide
+    socket.on("update_slide", (data) => {
+      if (!data) return;
+
+      if (data.action === 'next') {
+        current = Math.min(current + 1, slides.length - 1);
+        renderSlide(true); // true = veio do socket, não reenvia
+      } else if (data.action === 'prev') {
+        current = Math.max(current - 1, 0);
+        renderSlide(true);
+      } else if (data.action === 'goto' && data.slide) {
+        const n = Number(data.slide) - 1;
+        if (!isNaN(n) && n >= 0 && n < slides.length) {
+          current = n;
+          renderSlide(true);
+        }
+      } else if (data.slide) {
+        const n = Number(data.slide) - 1;
+        if (!isNaN(n) && n >= 0 && n < slides.length) {
+          current = n;
+          renderSlide(true);
+        }
+      }
+    });
+
+
+    // Solicita estado inicial ao conectar
+    socket.on('connect', () => {
+      console.log("Conectado ao servidor Socket.IO");
+      socket.emit('request_state');
+    });
+
+    socket.on('state', (data) => {
+      if (data && typeof data.slide === 'number') {
+        current = data.slide - 1;
+        renderSlide();
+      }
+    });
+
+  </script>
+</body>
+</html>
