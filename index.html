@@ -1,32 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html lang="pt-br">
 
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Document</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
     <!-- Tema do highlight.js -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-dark.min.css">
 
     <!-- highlight.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
 
     <!-- Plugin para números de linha -->
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
 
     <!-- marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <link rel="stylesheet" href="css/estilos_lazybyte.css">
+    <link rel="stylesheet" href="./css/estilos_lazybyte.css">
 
 </head>
 
 <body>
+    <section class="overview" id="overview"></section>
     <div class="status-card" role="region" aria-label="Status de disponibilidade">
         <div class="status-line">
             <!-- LED: role + aria-pressed toggles availability of blink; descriptive aria-live for screen readers -->
@@ -38,9 +41,11 @@
         </div>
     </div>
 
-    <header id="logo-header" class="logo-header">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_TV_2015.png" alt="Logo">
-        <h1>Meu Site</h1>
+    <header id="topo" >
+        <div id="logo-header" class="logo-header" >
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_TV_2015.png" alt="Logo">
+            <h1>Meu Site</h1>
+        </div>
     </header>
 
     <div class="menu-btn" id="menu-btn">
@@ -51,11 +56,13 @@
 
     <nav id="menu">
 
+        <h1 id="logoMob" class="hide" >Logo</h1>
+
         <ul>
             <li><a href="#">Início</a></li>
             <li><a href="#">Serviços</a></li>
             <li><a href="#">Portfólio</a></li>
-            <li><a href="l.a.b/" title="Lazybyte Academy Blog">L.A.B</a></li>
+            <li><a href="../l.a.b/" title="Lazybyte Academy Blog">L.A.B</a></li>
             <li><a href="#">Contato</a></li>
             <li class="auth-only">
                 <a href="#" onclick="sair()">Sair</a>
@@ -64,11 +71,47 @@
 
     </nav>
 
-    <section class="hero">
-        <div class="container">
-            <h1>Mude o <strong> Mundo </strong> </h1>
-            <p>Junte-se a uma equipe de desenvolvedores apaixonados redefinindo o futuro da criação 3D.</p>
-        </div>  
+    <div class="hero-slider conteudos">
+        <div class="progress-bar" id="progress-bar"></div>
+
+        <div class="slide active" data-duration="6">
+            <img src="https://picsum.photos/id/1018/1920/1080" alt="Imagem 1">
+            <div class="overlay"></div>
+        </div>
+
+        <div class="slide" data-duration="8">
+            <video src="https://www.w3schools.com/html/mov_bbb.mp4" muted></video>
+            <div class="overlay"></div>
+        </div>
+
+        <div class="slide" data-youtube="M7lc1UVf-VE"></div>
+
+        <button class="nav-btn prev">&#10094;</button>
+        <button class="nav-btn next">&#10095;</button>
+
+        <div class="dots"></div>
+    </div>
+
+    <section class="conteudos">
+
+        <div id="cards" class="cards"> 
+
+            <figure data-aaa="-0.3">
+                <img class="flutuar" src="https://d1x3t653etfkkb.cloudfront.net/games/featured-game-blocks/_size245x920/MbN_GamesModCharacter_Scout.png" alt="">
+            </figure>
+
+            <div data-aaa="0.6" >
+                <h3>Out Now</h3>
+                <h2>Lights, Camera, Murder!</h2>
+                <p>90s fashions! Upbeat jams! Sass dialled up to 100! Questionable jokes! Drag queens! All that and more awaits... in Murder by Numbers!</p>
+                <p class="links"><a href="#"> Nintendo Switch </a> | <a href="#"> Steam </a> </p>
+
+                <button>Begin your investigation</button>
+
+            </div>            
+
+        </div>
+                    
     </section>
 
     <footer>
@@ -82,12 +125,8 @@
         </div>
     </footer>
 
-    <script type="module" src="js/_lazybyte.js"></script>
 
-    <script type="module" >
-        import { protege } from "./js/protege.js";
-        protege();
-    </script>
+    <script type="module" src="./js/_lazybyte.js"></script> 
 
 </body>
 

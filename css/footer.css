@@ -20,7 +20,18 @@ footer::before {
     background-image: linear-gradient(-1deg, var(--cor-rodape) 49%, transparent 50%);
     position: absolute;
     top: -1.9rem;
-    /* background: linear-gradient(#d0253f, #cc0041); */ 
+}
+
+footer::after {
+    content: "";
+    border-top: solid 10px #000;
+    transform: rotate( -1deg );
+    height: 3rem;
+    position: absolute;
+    top: -1rem;
+    left: 0;
+    width: 100%;
+    display: block;
 }
 
 footer a {
